@@ -1,0 +1,34 @@
+receivers:
+  telemetryapi:
+
+exporters:
+  debug:
+    verbosity: detailed
+  otlphttp/grafana_cloud:
+    # https://github.com/open-telemetry/opentelemetry-collector/tree/main/exporter/otlphttpexporter
+    endpoint: "${env:GRAFANA_CLOUD_OTLP_ENDPOINT}"
+    auth:
+      authenticator: basicauth/grafana_cloud
+
+extensions:
+  basicauth/grafana_cloud:
+    # https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/extension/basicauthextension
+    client_auth:
+      username: "${env:GRAFANA_CLOUD_INSTANCE_ID}"
+      password: "${env:GRAFANA_CLOUD_API_KEY:-${secretsmanager:${env:GRAFANA_CLOUD_API_KEY_ARN}}}"
+
+processors:
+  batch:
+  decouple:
+
+service:
+  extensions: [basicauth/grafana_cloud]
+  pipelines:
+    traces:
+      receivers: [telemetryapi]
+      processors: [batch,decouple]
+      exporters: [otlphttp/grafana_cloud]
+    logs:
+      receivers: [telemetryapi]
+      processors: [batch,decouple]
+      exporters: [otlphttp/grafana_cloud]
