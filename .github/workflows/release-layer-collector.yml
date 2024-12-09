@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       COLLECTOR_VERSION: ${{ steps.get-upstream-version.outputs.COLLECTOR_VERSION }}
+      UPSTREAM_VERSION: ${{ steps.get-upstream-version.outputs.UPSTREAM_VERSION }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -27,6 +28,7 @@ jobs:
         id: get-upstream-version
         run: |
           COLLECTOR_VERSION=$(grep 'go.opentelemetry.io/collector/otelcol v' ${{ github.workspace }}/opentelemetry-lambda/collector/go.mod | awk '{print $2; exit}')
+          echo "UPSTREAM_VERSION=$COLLECTOR_VERSION" >> $GITHUB_OUTPUT
           echo "COLLECTOR_VERSION=$COLLECTOR_VERSION+grafana" >> $GITHUB_OUTPUT
           
   create-release:
@@ -100,8 +102,8 @@ jobs:
           - us-west-2
     with:
       artifact-name: opentelemetry-collector-layer-${{ matrix.architecture }}.zip
-      layer-name: opentelemetry-collector
-      component-version: ${{needs.infer-version.outputs.COLLECTOR_VERSION}}
+      layer-name: opentelemetry-collector-grafana
+      component-version: ${{needs.infer-version.outputs.UPSTREAM_VERSION}}
       architecture: ${{ matrix.architecture }}
       release-group: prod
       aws_region: ${{ matrix.aws_region }}
