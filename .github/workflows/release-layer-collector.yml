@@ -84,21 +84,21 @@ jobs:
           - amd64
           - arm64
         aws_region:
-          # - ap-northeast-1
-          # - ap-northeast-2
-          # - ap-south-1
-          # - ap-southeast-1
-          # - ap-southeast-2
-          # - ca-central-1
-          # - eu-central-1
-          # - eu-north-1
-          # - eu-west-1
-          # - eu-west-2
-          # - eu-west-3
-          # - sa-east-1
-          # - us-east-1
-          # - us-east-2
-          # - us-west-1
+          - ap-northeast-1
+          - ap-northeast-2
+          - ap-south-1
+          - ap-southeast-1
+          - ap-southeast-2
+          - ca-central-1
+          - eu-central-1
+          - eu-north-1
+          - eu-west-1
+          - eu-west-2
+          - eu-west-3
+          - sa-east-1
+          - us-east-1
+          - us-east-2
+          - us-west-1
           - us-west-2
     with:
       artifact-name: opentelemetry-collector-layer-${{ matrix.architecture }}.zip
@@ -108,3 +108,36 @@ jobs:
       release-group: prod
       aws_region: ${{ matrix.aws_region }}
     secrets: inherit
+
+  update-release:
+    runs-on: ubuntu-latest
+    needs: [publish-layer,infer-version]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+      - name: Assemble ARNs
+        env:
+          UPSTREAM_VERSION: '${{ needs.infer-version.outputs.UPSTREAM_VERSION }}'
+        run: |
+
+          LAMBDA_COMMIT=$(git rev-parse HEAD:./opentelemetry-lambda)
+
+          echo '## Contains' > notes.txt
+          echo "opentelemetry-collector [$UPSTREAM_VERSION](https://github.com/open-telemetry/opentelemetry-collector/releases/tag/$UPSTREAM_VERSION)" >> notes.txt
+          echo "opentelemetry-collector-contrib [$UPSTREAM_VERSION](https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/$UPSTREAM_VERSION)" >> notes.txt
+          echo "opentelemetry-lambda [$LAMBDA_COMMIT](https://github.com/open-telemetry/opentelemetry-lambda/tree/$LAMBDA_COMMIT)" >> notes.txt
+
+          echo '## Published ARNs' >> notes.txt
+          echo '```' >> notes.txt
+          cat artifacts/*/arn*.txt | sort >> notes.txt
+          echo '```' >> notes.txt
+      - name: Add Binary to Release
+        run: |
+          gh release edit ${{needs.infer-version.outputs.COLLECTOR_VERSION}} -F notes.txt
+          gh release edit ${{needs.infer-version.outputs.COLLECTOR_VERSION}} --draft=false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
