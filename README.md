@@ -6,7 +6,7 @@ It is built using the upstream repository with a different [default configuratio
 
 ## Usage
 
-Add the extension layer ARN to your Lambda function (TODO: publish layer).
+Add the extension layer ARN to your Lambda function. You can find the correct ARN for your region on the [releases page](/releases).
 Set the following environment variables to the values provided by your [Grafana Cloud Stack](https://grafana.com):
 
 | Name                          | Value                                                                                                                                  |
