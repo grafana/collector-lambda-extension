@@ -1,9 +1,13 @@
 receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: "localhost:4317"
+      http:
+        endpoint: "localhost:4318"
   telemetryapi:
 
 exporters:
-  debug:
-    verbosity: detailed
   otlphttp/grafana_cloud:
     # https://github.com/open-telemetry/opentelemetry-collector/tree/main/exporter/otlphttpexporter
     endpoint: "${env:GRAFANA_CLOUD_OTLP_ENDPOINT}"
@@ -25,10 +29,14 @@ service:
   extensions: [basicauth/grafana_cloud]
   pipelines:
     traces:
-      receivers: [telemetryapi]
+      receivers: [telemetryapi,otlp]
       processors: [batch,decouple]
       exporters: [otlphttp/grafana_cloud]
     logs:
-      receivers: [telemetryapi]
+      receivers: [telemetryapi,otlp]
+      processors: [batch,decouple]
+      exporters: [otlphttp/grafana_cloud]
+    metrics:
+      receivers: [otlp]
       processors: [batch,decouple]
       exporters: [otlphttp/grafana_cloud]
