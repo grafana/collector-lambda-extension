@@ -1,0 +1,17 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: collector-lambda-extension
+  title: collector-lambda-extension
+  description: |
+    Custom distribution of the opentelemetry-lambda collector layer, simplifying usage with Grafana Cloud
+  links:
+    - title: Slack Channel
+      url: https://raintank-corp.slack.com/archives/C034H8U2L81
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: grafana/collector-lambda-extension
+spec:
+  type: tool
+  owner: group:default/devex
+  lifecycle: production
