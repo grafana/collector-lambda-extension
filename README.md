@@ -2,7 +2,7 @@
 
 This repository contains a custom distribution of the [opentelemetry-lambda](https://github.com/open-telemetry/opentelemetry-lambda/tree/main/collector) collector layer.
 
-It is built using the upstream repository with a different [default configuration file](config.yaml).
+It is built using the upstream repository with a different [default configuration file](./collector/config.yaml).
 
 ## Usage
 
