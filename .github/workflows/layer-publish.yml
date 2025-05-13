@@ -83,7 +83,7 @@ jobs:
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.PROD_LAMBDA_ROLE_ARN }}
+          role-to-assume: ${{ vars.PROD_LAMBDA_ROLE_ARN }}
           role-duration-seconds: 1200
           aws-region: ${{ inputs.aws_region }}
           mask-aws-account-id: false
