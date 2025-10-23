@@ -86,7 +86,7 @@ jobs:
         with:
           name: ${{ inputs.artifact-name }}
 
-      - uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df
+      - uses: aws-actions/configure-aws-credentials@0d00a56e021d460a2d2bb10b9d8f94f6693a71ad
         with:
           role-to-assume: ${{ vars.PROD_LAMBDA_ROLE_ARN }}
           role-duration-seconds: 1200
