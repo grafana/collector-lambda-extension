@@ -76,9 +76,10 @@ jobs:
 
       - name: Add Binary to Release
         run: |
-          gh release upload ${{needs.infer-version.outputs.COLLECTOR_VERSION}} ${{ github.workspace }}/opentelemetry-lambda/collector/build/opentelemetry-collector-layer-${{ matrix.architecture }}.zip
+          gh release upload --repo ${GH_REPO} ${{needs.infer-version.outputs.COLLECTOR_VERSION}} ${{ github.workspace }}/opentelemetry-lambda/collector/build/opentelemetry-collector-layer-${{ matrix.architecture }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
 
   publish-layer:
     permissions:
@@ -145,7 +146,8 @@ jobs:
           echo '```' >> notes.txt
       - name: Add Binary to Release
         run: |
-          gh release edit ${{needs.infer-version.outputs.COLLECTOR_VERSION}} -F notes.txt
-          gh release edit ${{needs.infer-version.outputs.COLLECTOR_VERSION}} --draft=false
+          gh release edit --repo ${GH_REPO} ${{needs.infer-version.outputs.COLLECTOR_VERSION}} -F notes.txt
+          gh release edit --repo ${GH_REPO} ${{needs.infer-version.outputs.COLLECTOR_VERSION}} --draft=false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
